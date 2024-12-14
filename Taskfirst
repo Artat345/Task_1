@@ -1,0 +1,670 @@
+1)
+using System;
+using System.IO;
+
+public class FileChecker
+{
+    public static bool DoesFileExist(string path)
+    {
+        try
+        {
+            // Проверяем, существует ли файл
+            return File.Exists(path);
+        }
+        catch (ArgumentNullException)
+        {
+            Console.WriteLine("Путь не может быть null.");
+            return false;
+        }
+        catch (PathTooLongException)
+        {
+            Console.WriteLine("Путь слишком длинный.");
+            return false;
+        }
+        catch (DirectoryNotFoundException)
+        {
+            Console.WriteLine("Директория не найдена.");
+            return false;
+        }
+        catch (IOException ex)
+        {
+            Console.WriteLine($"Ошибка ввода-вывода: {ex.Message}");
+            return false;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Произошла ошибка: {ex.Message}");
+            return false;
+        }
+    }
+
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("Введите путь к файлу:");
+        string filePath = Console.ReadLine();
+
+        bool exists = DoesFileExist(filePath);
+        if (exists)
+        {
+            Console.WriteLine("Файл существует.");
+        }
+        else
+        {
+            Console.WriteLine("Файл не существует.");
+        }
+    }
+}
+
+2)
+using System;
+using System.IO;
+
+public class FileWriter
+{
+    public static void WriteToFile(string filePath, string content)
+    {
+        try
+        {
+            // Записываем содержимое в файл
+            File.WriteAllText(filePath, content);
+            Console.WriteLine("Данные успешно записаны в файл.");
+        }
+        catch (ArgumentNullException)
+        {
+            // Обработка случая, когда путь или содержимое равны null
+            Console.WriteLine("Путь или содержимое не могут быть null.");
+        }
+        catch (PathTooLongException)
+        {
+            // Обработка случая, когда путь слишком длинный
+            Console.WriteLine("Путь к файлу слишком длинный.");
+        }
+        catch (DirectoryNotFoundException)
+        {
+            // Обработка случая, когда директория не найдена
+            Console.WriteLine("Директория, в которой должен быть создан файл, не найдена.");
+        }
+        catch (IOException ex)
+        {
+            // Обработка других ошибок ввода-вывода
+            Console.WriteLine($"Ошибка ввода-вывода: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            // Обработка любых других исключений
+            Console.WriteLine($"Произошла ошибка: {ex.Message}");
+        }
+    }
+
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("Введите путь к файлу:");
+        string filePath = Console.ReadLine();
+
+        Console.WriteLine("Введите текст для записи в файл:");
+        string content = Console.ReadLine();
+
+        WriteToFile(filePath, content);
+    }
+}
+
+3)
+using System;
+using System.IO;
+
+public class FileMover
+{
+    public static void MoveFiles(string sourceDirectory, string destinationDirectory, string fileExtension)
+    {
+        try
+        {
+            // Проверяем, существует ли исходная директория
+            if (!Directory.Exists(sourceDirectory))
+            {
+                Console.WriteLine("Исходная директория не найдена.");
+                return;
+            }
+
+            // Создаем целевую директорию, если она не существует
+            Directory.CreateDirectory(destinationDirectory);
+
+            // Получаем все файлы с указанным расширением
+            string[] files = Directory.GetFiles(sourceDirectory, $"*{fileExtension}");
+
+            // Перемещаем каждый файл в целевую директорию
+            foreach (string file in files)
+            {
+                string fileName = Path.GetFileName(file);
+                string destFile = Path.Combine(destinationDirectory, fileName);
+                File.Move(file, destFile);
+                Console.WriteLine($"Файл {fileName} перемещен в {destinationDirectory}.");
+            }
+
+            if (files.Length == 0)
+            {
+                Console.WriteLine("Файлы с указанным расширением не найдены.");
+            }
+        }
+        catch (IOException ex)
+        {
+            // Обработка ошибок ввода-вывода
+            Console.WriteLine($"Ошибка ввода-вывода: {ex.Message}");
+        }
+        catch (UnauthorizedAccessException)
+        {
+            // Обработка ошибок доступа
+            Console.WriteLine("Ошибка доступа: у вас нет прав на доступ к одной из директорий.");
+        }
+    }
+
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("Введите путь к исходной директории:");
+        string sourceDirectory = Console.ReadLine();
+
+        Console.WriteLine("Введите путь к целевой директории:");
+        string destinationDirectory = Console.ReadLine();
+
+        Console.WriteLine("Введите расширение файлов (например, .txt):");
+        string fileExtension = Console.ReadLine();
+
+        MoveFiles(sourceDirectory, destinationDirectory, fileExtension);
+    }
+}
+
+
+4)
+using System;
+using System.IO;
+
+public class WordCounter
+{
+    public static int CountWordsInFile(string filePath)
+    {
+        try
+        {
+            // Читаем содержимое файла
+            string content = File.ReadAllText(filePath);
+            // Разделяем текст на слова и считаем их количество
+            string[] words = content.Split(new char[] { ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            return words.Length;
+        }
+        catch (FileNotFoundException)
+        {
+            Console.WriteLine("Файл не найден. Пожалуйста, проверьте путь к файлу.");
+            return 0;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            Console.WriteLine("Ошибка доступа: у вас нет прав на чтение этого файла.");
+            return 0;
+        }
+        catch (IOException ex)
+        {
+            Console.WriteLine($"Ошибка ввода-вывода: {ex.Message}");
+            return 0;
+        }
+    }
+
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("Введите путь к текстовому файлу:");
+        string filePath = Console.ReadLine();
+
+        int wordCount = CountWordsInFile(filePath);
+        if (wordCount > 0)
+        {
+            Console.WriteLine($"Количество слов в файле: {wordCount}");
+        }
+    }
+}
+
+5)
+using System;
+using System.IO;
+
+public class BackupCreator
+{
+    public static void CreateBackup(string filePath)
+    {
+        try
+        {
+            // Проверяем, существует ли файл
+            if (!File.Exists(filePath))
+            {
+                Console.WriteLine("Файл не найден. Резервная копия не может быть создана.");
+                return;
+            }
+
+            // Получаем имя файла и его расширение
+            string fileName = Path.GetFileNameWithoutExtension(filePath);
+            string fileExtension = Path.GetExtension(filePath);
+            string directory = Path.GetDirectoryName(filePath);
+
+            // Формируем новое имя файла с текущей датой и временем
+            string backupFileName = $"{fileName}_{DateTime.Now:yyyyMMdd_HHmmss}{fileExtension}";
+            string backupFilePath = Path.Combine(directory, backupFileName);
+
+            // Копируем файл
+            File.Copy(filePath, backupFilePath);
+            Console.WriteLine($"Резервная копия создана: {backupFilePath}");
+        }
+        catch (IOException ex)
+        {
+            Console.WriteLine($"Ошибка ввода-вывода: {ex.Message}");
+        }
+    }
+
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("Введите путь к файлу для резервного копирования:");
+        string filePath = Console.ReadLine();
+
+        CreateBackup(filePath);
+    }
+}
+
+6)
+using System;
+using System.IO;
+
+public class FileMerger
+{
+    public static void MergeFiles(string directoryPath, string outputFilePath)
+    {
+        using (StreamWriter writer = new StreamWriter(outputFilePath))
+        {
+            // Получаем все текстовые файлы в указанной директории
+            string[] filePaths = Directory.GetFiles(directoryPath, "*.txt");
+
+            foreach (string filePath in filePaths)
+            {
+                try
+                {
+                    // Читаем содержимое файла и записываем в выходной файл
+                    string content = File.ReadAllText(filePath);
+                    writer.WriteLine(content);
+                    Console.WriteLine($"Содержимое файла {filePath} добавлено в {outputFilePath}.");
+                }
+                catch (IOException ex)
+                {
+                    // Обработка ошибок ввода-вывода
+                    Console.WriteLine($"Ошибка ввода-вывода при обработке файла {filePath}: {ex.Message}. Пропускаем.");
+                }
+            }
+        }
+    }
+
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("Введите путь к директории с текстовыми файлами:");
+        string directoryPath = Console.ReadLine();
+
+        Console.WriteLine("Введите путь к выходному файлу:");
+        string outputFilePath = Console.ReadLine();
+
+        MergeFiles(directoryPath, outputFilePath);
+    }
+}
+
+7)
+using System;
+using System.IO;
+
+public class FileEncryptor
+{
+    public static void EncryptFile(string inputFilePath, string outputFilePath)
+    {
+        try
+        {
+            // Читаем содержимое входного файла
+            string content = File.ReadAllText(inputFilePath);
+            string encryptedContent = Encrypt(content);
+
+            // Сохраняем зашифрованное содержимое в выходной файл
+            File.WriteAllText(outputFilePath, encryptedContent);
+            Console.WriteLine($"Файл успешно зашифрован и сохранен как: {outputFilePath}");
+        }
+        catch (IOException ex)
+        {
+            // Обработка ошибок ввода-вывода
+            Console.WriteLine($"Ошибка ввода-вывода: {ex.Message}");
+        }
+    }
+
+    private static string Encrypt(string text)
+    {
+        char[] buffer = text.ToCharArray();
+        for (int i = 0; i < buffer.Length; i++)
+        {
+            char letter = buffer[i];
+            // Шифруем только буквы
+            if (char.IsLetter(letter))
+            {
+                // Заменяем букву на следующую в алфавите
+                letter = (char)(letter + 1);
+                // Если буква 'Z' или 'z', возвращаем к 'A' или 'a'
+                if (letter == 'Z' + 1) letter = 'A';
+                if (letter == 'z' + 1) letter = 'a';
+            }
+            buffer[i] = letter;
+        }
+        return new string(buffer);
+    }
+
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("Введите путь к входному файлу:");
+        string inputFilePath = Console.ReadLine();
+
+        Console.WriteLine("Введите путь к выходному файлу:");
+        string outputFilePath = Console.ReadLine();
+
+        EncryptFile(inputFilePath, outputFilePath);
+    }
+}
+
+8)
+using System;
+using System.IO;
+
+public class EmptyFileDeleter
+{
+    public static void DeleteEmptyFiles(string directoryPath)
+    {
+        try
+        {
+            // Получаем все файлы в указанной директории
+            string[] filePaths = Directory.GetFiles(directoryPath);
+
+            // Перебираем все файлы и удаляем пустые
+            foreach (string filePath in filePaths)
+            {
+                if (new FileInfo(filePath).Length == 0)
+                {
+                    try
+                    {
+                        // Пытаемся удалить файл
+                        File.Delete(filePath);
+                        Console.WriteLine($"Пустой файл удален: {filePath}");
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        // Обработка ошибки доступа
+                        Console.WriteLine($"Ошибка доступа к файлу: {filePath}. Пропускаем.");
+                    }
+                }
+            }
+        }
+        catch (UnauthorizedAccessException)
+        {
+            // Обработка ошибки доступа к директории
+            Console.WriteLine($"Ошибка доступа к директории: {directoryPath}. Пропускаем.");
+        }
+    }
+
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("Введите путь к директории:");
+        string directoryPath = Console.ReadLine();
+
+        DeleteEmptyFiles(directoryPath);
+    }
+}
+
+9)
+using System;
+using System.IO;
+
+public class FileCopier
+{
+    public static void CopyFileWithReplacements(string inputFilePath, string outputFilePath, string oldWord, string newWord)
+    {
+        try
+        {
+            // Читаем содержимое входного файла
+            string content = File.ReadAllText(inputFilePath);
+
+            // Заменяем старое слово на новое
+            string updatedContent = content.Replace(oldWord, newWord);
+
+            // Сохраняем обновленное содержимое в выходной файл
+            File.WriteAllText(outputFilePath, updatedContent);
+            Console.WriteLine($"Файл успешно скопирован с заменой '{oldWord}' на '{newWord}' в: {outputFilePath}");
+        }
+        catch (Exception ex)
+        {
+            // Обработка всех возможных ошибок
+            Console.WriteLine($"Произошла ошибка: {ex.Message}");
+        }
+    }
+
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("Введите путь к входному файлу:");
+        string inputFilePath = Console.ReadLine();
+
+        Console.WriteLine("Введите путь к выходному файлу:");
+        string outputFilePath = Console.ReadLine();
+
+        Console.WriteLine("Введите слово для замены:");
+        string oldWord = Console.ReadLine();
+
+        Console.WriteLine("Введите новое слово:");
+        string newWord = Console.ReadLine();
+
+        CopyFileWithReplacements(inputFilePath, outputFilePath, oldWord, newWord);
+    }
+}
+
+10)
+using System;
+using System.IO;
+using System.IO.Compression;
+
+public class FileCompressor
+{
+    public static void CompressFile(string inputFilePath, string outputFilePath)
+    {
+        try
+        {
+            // Открываем входной файл для чтения
+            using (FileStream inputFileStream = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read))
+            {
+                // Создаем выходной файл для записи сжатых данных
+                using (FileStream outputFileStream = new FileStream(outputFilePath, FileMode.Create, FileAccess.Write))
+                {
+                    // Создаем GZipStream для сжатия данных
+                    using (GZipStream compressionStream = new GZipStream(outputFileStream, CompressionMode.Compress))
+                    {
+                        // Копируем данные из входного файла в GZipStream
+                        inputFileStream.CopyTo(compressionStream);
+                    }
+                }
+            }
+            Console.WriteLine($"Файл успешно сжат и сохранен как: {outputFilePath}");
+        }
+        catch (Exception ex)
+        {
+            // Обработка ошибок
+            Console.WriteLine($"Произошла ошибка: {ex.Message}");
+        }
+    }
+
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("Введите путь к входному файлу:");
+        string inputFilePath = Console.ReadLine();
+
+        Console.WriteLine("Введите путь к выходному файлу (сжатый):");
+        string outputFilePath = Console.ReadLine();
+
+        CompressFile(inputFilePath, outputFilePath);
+    }
+} ------------------- хз 
+
+11)
+using System;
+using System.IO;
+
+public class FileSplitter
+{
+    public static void SplitFile(string inputFilePath, long splitSize)
+    {
+        try
+        {
+            // Проверяем, существует ли файл
+            if (!File.Exists(inputFilePath))
+            {
+                Console.WriteLine($"Файл не найден: {inputFilePath}");
+                return;
+            }
+
+            // Получаем размер исходного файла
+            long fileSize = new FileInfo(inputFilePath).Length;
+
+            // Проверяем, достаточно ли размера для разбивки
+            if (fileSize <= splitSize)
+            {
+                Console.WriteLine("Размер файла меньше или равен указанному размеру. Разбиение не требуется.");
+                return;
+            }
+
+            // Открываем исходный файл для чтения
+            using (FileStream inputFileStream = new FileStream(inputFilePath, FileMode.Open, FileAccess.Read))
+            {
+                // Создаем первый выходной файл
+                using (FileStream outputFileStream1 = new FileStream(inputFilePath + ".part1", FileMode.Create, FileAccess.Write))
+                {
+                    // Копируем данные в первый файл
+                    byte[] buffer = new byte[4096];
+                    long bytesRead = 0;
+
+                    while (bytesRead < splitSize)
+                    {
+                        int read = inputFileStream.Read(buffer, 0, buffer.Length);
+                        if (read == 0) break; // Достигнут конец файла
+                        outputFileStream1.Write(buffer, 0, read);
+                        bytesRead += read;
+                    }
+                }
+
+                // Создаем второй выходной файл
+                using (FileStream outputFileStream2 = new FileStream(inputFilePath + ".part2", FileMode.Create, FileAccess.Write))
+                {
+                    // Копируем оставшиеся данные во второй файл
+                    inputFileStream.CopyTo(outputFileStream2);
+                }
+            }
+
+            Console.WriteLine($"Файл успешно разбит на: {inputFilePath}.part1 и {inputFilePath}.part2");
+        }
+        catch (Exception ex)
+        {
+            // Обработка ошибок
+            Console.WriteLine($"Произошла ошибка: {ex.Message}");
+        }
+    }
+
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("Введите путь к исходному файлу:");
+        string inputFilePath = Console.ReadLine();
+
+        Console.WriteLine("Введите размер для разбивки (в байтах):");
+        if (long.TryParse(Console.ReadLine(), out long splitSize))
+        {
+            SplitFile(inputFilePath, splitSize);
+        }
+        else
+        {
+            Console.WriteLine("Некорректный размер.");
+        }
+    }
+} -------------- хз 
+
+12)
+using System;
+using System.IO;
+
+public class FileChangeWatcher
+{
+    private string _filePath;
+    private string _backupDirectory;
+
+    public FileChangeWatcher(string filePath, string backupDirectory)
+    {
+        if (string.IsNullOrWhiteSpace(filePath))
+            throw new ArgumentException("Путь к файлу не может быть пустым.", nameof(filePath));
+        
+        if (string.IsNullOrWhiteSpace(backupDirectory))
+            throw new ArgumentException("Путь к каталогу резервных копий не может быть пустым.", nameof(backupDirectory));
+
+        _filePath = filePath;
+        _backupDirectory = backupDirectory;
+
+        // Создаем каталог для резервных копий, если он не существует
+        Directory.CreateDirectory(_backupDirectory);
+    }
+
+    public void StartWatching()
+    {
+        using (FileSystemWatcher watcher = new FileSystemWatcher())
+        {
+            watcher.Path = Path.GetDirectoryName(_filePath);
+            watcher.Filter = Path.GetFileName(_filePath);
+            watcher.NotifyFilter = NotifyFilters.LastWrite;
+
+            // Подписываемся на событие изменения файла
+            watcher.Changed += OnChanged;
+
+            // Начинаем мониторинг
+            watcher.EnableRaisingEvents = true;
+
+            Console.WriteLine($"Начато отслеживание изменений в файле: {_filePath}");
+            Console.WriteLine("Нажмите 'q' для выхода.");
+
+            // Ожидаем ввода пользователя для завершения работы
+            while (Console.Read() != 'q') ;
+        }
+    }
+
+    private void OnChanged(object sender, FileSystemEventArgs e)
+    {
+        try
+        {
+            // Ждем, чтобы убедиться, что файл не занят
+            System.Threading.Thread.Sleep(1000);
+
+            // Создаем имя резервной копии
+            string backupFileName = Path.Combine(_backupDirectory, $"{Path.GetFileNameWithoutExtension(_filePath)}_backup_{DateTime.Now:yyyyMMdd_HHmmss}{Path.GetExtension(_filePath)}");
+
+            // Копируем файл
+            File.Copy(_filePath, backupFileName, true);
+            Console.WriteLine($"Создана резервная копия: {backupFileName}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка при создании резервной копии: {ex.Message}");
+        }
+    }
+
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("Введите путь к файлу для отслеживания:");
+        string filePath = Console.ReadLine();
+
+        Console.WriteLine("Введите путь к каталогу для сохранения резервных копий:");
+        string backupDirectory = Console.ReadLine();
+
+        try
+        {
+            FileChangeWatcher watcher = new FileChangeWatcher(filePath, backupDirectory);
+            watcher.StartWatching();
+        }
+        catch (ArgumentException ex)
+        {
+            Console.WriteLine($"Ошибка: {ex.Message}");
+        }
+    }
+}
