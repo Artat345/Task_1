@@ -1,0 +1,139 @@
+1) 
+
+using System;
+using System.Text.RegularExpressions;
+
+public class PhoneNumberValidator
+{
+    // Регулярное выражение для проверки валидного телефонного номера
+    private static readonly string PhoneNumberPattern = @"^(\+?\d{1,3}[- ]?)?\(?\d{1,4}?\)?[- ]?\d{1,4}[- ]?\d{1,4}[- ]?\d{1,9}$";
+
+    public static bool IsValidPhoneNumber(string phoneNumber)
+    {
+        if (string.IsNullOrWhiteSpace(phoneNumber))
+        {
+            return false; // Пустая строка не является валидным номером
+        }
+
+        // Проверяем соответствие строки регулярному выражению
+        return Regex.IsMatch(phoneNumber, PhoneNumberPattern);
+    }
+
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("Введите номер телефона для проверки:");
+        string input = Console.ReadLine();
+
+        if (IsValidPhoneNumber(input))
+        {
+            Console.WriteLine("Номер телефона валиден.");
+        }
+        else
+        {
+            Console.WriteLine("Номер телефона не валиден.");
+        }
+    }
+}
+
+
+2)
+
+using System;
+using System.Text.RegularExpressions;
+
+public class DateValidator
+{
+    // Регулярное выражение для проверки валидной даты в формате "dd.MM.yyyy"
+    private static readonly string DatePattern = @"^(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.\d{4}$";
+
+    public static bool IsValidDate(string dateString)
+    {
+        if (string.IsNullOrWhiteSpace(dateString))
+        {
+            return false; // Пустая строка не является валидной датой
+        }
+
+        // Проверяем соответствие строки регулярному выражению
+        if (Regex.IsMatch(dateString, DatePattern))
+        {
+            try
+            {
+                // Пытаемся преобразовать строку в объект DateTime
+                DateTime date = DateTime.ParseExact(dateString, "dd.MM.yyyy", null);
+                return true;
+            }
+            catch (FormatException)
+            {
+                // Если преобразование не удалось, значит дата некорректна
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("Введите дату для проверки (в формате dd.MM.yyyy):");
+        string input = Console.ReadLine();
+
+        if (IsValidDate(input))
+        {
+            Console.WriteLine("Дата валидна.");
+        }
+        else
+        {
+            Console.WriteLine("Дата не валидна.");
+        }
+    }
+}
+
+
+3)
+
+using System.Windows;
+
+namespace GreetingApp
+{
+    /// <summary>
+    /// Логика взаимодействия для MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+
+        private void GreetButton_Click(object sender, RoutedEventArgs e)
+        {
+            string firstName = FirstNameTextBox.Text;
+            string lastName = LastNameTextBox.Text;
+
+            // Формируем приветствие
+            string greeting = $"Привет, {firstName} {lastName}!";
+            GreetingTextBlock.Text = greeting;
+        }
+    }
+}
+
+
+<Window x:Class="GreetingApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Приветствие" Height="200" Width="300">
+    <Grid>
+        <Label Content="Имя:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0"/>
+        <TextBox x:Name="FirstNameTextBox" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="70,10,0,0" Width="200"/>
+        
+        <Label Content="Фамилия:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,50,0,0"/>
+        <TextBox x:Name="LastNameTextBox" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="70,50,0,0" Width="200"/>
+        
+        <Button Content="Приветствовать" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,90,0,0" Width="260" Click="GreetButton_Click"/>
+        
+        <TextBlock x:Name="GreetingTextBlock" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,130,0,0" Width="260"/>
+    </Grid>
+</Window>
+
